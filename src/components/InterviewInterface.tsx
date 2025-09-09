@@ -1,10 +1,14 @@
-import React, { useState } from "react";
-import { MessageCircle, Send, Mic, MicOff } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import QuestionManager, { CustomQuestion } from "./QuestionManager";
+import { useAppContext } from "@/context/AppContext";
+import { CandidateResult, InterviewResponse } from "@/types/job";
+import { MessageSquare, Send, Mic, MicOff, CheckCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   id: string;
@@ -14,25 +18,38 @@ interface Message {
 }
 
 const InterviewInterface = () => {
+  const [searchParams] = useSearchParams();
+  const { getJobById, addCandidateResult } = useAppContext();
+  const { toast } = useToast();
+  
+  const jobId = searchParams.get('job') || 'dev-fullstack-001';
+  const candidateToken = searchParams.get('token') || 'demo-candidate';
+  const currentJob = getJobById(jobId);
+  
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: '1',
-      sender: 'ane',
-      content: 'Olá! Eu sou a Ane, sua entrevistadora virtual da Animaserv. É um prazer conhecê-lo! Estamos muito animados para conversar com você sobre a vaga de Desenvolvedor Full Stack. Vamos começar nossa conversa de forma natural e descontraída. Como você está se sentindo hoje?',
-      timestamp: new Date()
-    }
+      id: "1",
+      sender: "ane",
+      content: `Olá! Eu sou a Ane, sua entrevistadora virtual da Animaserv. Estou aqui para conduzir sua entrevista para a vaga de ${currentJob?.title || 'Desenvolvedor Full Stack'}. Para começar, qual é seu nome completo?`,
+      timestamp: new Date(),
+    },
   ]);
   
-  const [inputMessage, setInputMessage] = useState('');
+  const [inputMessage, setInputMessage] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [hasStartedCustomQuestions, setHasStartedCustomQuestions] = useState(false);
+  const [interviewResponses, setInterviewResponses] = useState<InterviewResponse[]>([]);
+  const [candidateName, setCandidateName] = useState("");
+  const [candidateEmail, setCandidateEmail] = useState("");
+  const [isInterviewComplete, setIsInterviewComplete] = useState(false);
+  const [collectingPersonalInfo, setCollectingPersonalInfo] = useState(true);
 
-  const candidateInfo = {
-    name: "João Silva",
-    position: "Desenvolvedor Full Stack",
-    company: "Animaserv"
+  // Get all available questions (AI generated + job custom + local custom)
+  const getAllQuestions = () => {
+    const aiQuestions = currentJob?.aiGeneratedQuestions || [];
+    const jobCustomQuestions = currentJob?.customQuestions || [];
+    return [...customQuestions, ...jobCustomQuestions, ...aiQuestions];
   };
 
   const handleSendMessage = () => {
@@ -40,42 +57,110 @@ const InterviewInterface = () => {
 
     const newMessage: Message = {
       id: Date.now().toString(),
-      sender: 'candidate',
+      sender: "candidate",
       content: inputMessage,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     setMessages(prev => [...prev, newMessage]);
-    setInputMessage('');
+    processResponse(inputMessage);
+    setInputMessage("");
+  };
 
-    // Simular resposta da Ane
-    setTimeout(() => {
-      let responseContent = '';
-      
-      if (!hasStartedCustomQuestions && customQuestions.length > 0) {
-        // Começar com as perguntas personalizadas
-        setHasStartedCustomQuestions(true);
-        responseContent = `Perfeito! Agora vou fazer algumas perguntas específicas que preparei para você. ${customQuestions[0].question}`;
-      } else if (hasStartedCustomQuestions && currentQuestionIndex < customQuestions.length - 1) {
-        // Próxima pergunta personalizada
-        const nextIndex = currentQuestionIndex + 1;
-        setCurrentQuestionIndex(nextIndex);
-        responseContent = `Ótima resposta! Próxima pergunta: ${customQuestions[nextIndex].question}`;
-      } else if (hasStartedCustomQuestions && currentQuestionIndex >= customQuestions.length - 1) {
-        // Finalizar perguntas personalizadas e continuar com perguntas gerais
-        responseContent = 'Excelente! Finalizamos as perguntas específicas. Agora vou fazer algumas perguntas gerais para conhecê-lo melhor. Conte-me sobre sua experiência com desenvolvimento web e quais tecnologias você mais utiliza no seu dia a dia.';
-      } else {
-        // Perguntas gerais quando não há perguntas personalizadas
-        responseContent = 'Que bom saber! Agora vou fazer algumas perguntas para conhecermos melhor seu perfil profissional. Primeira pergunta: Conte-me sobre sua experiência com desenvolvimento web e quais tecnologias você mais utiliza no seu dia a dia.';
+  const processResponse = (response: string) => {
+    if (collectingPersonalInfo) {
+      if (!candidateName) {
+        setCandidateName(response.trim());
+        setTimeout(() => addAneMessage("Obrigada! Qual é seu email para contato?"), 1000);
+      } else if (!candidateEmail) {
+        setCandidateEmail(response.trim());
+        setCollectingPersonalInfo(false);
+        setTimeout(() => {
+          addAneMessage("Perfeito! Agora vamos começar nossa entrevista. Primeira pergunta:");
+          askNextQuestion();
+        }, 1500);
       }
+      return;
+    }
 
-      const aneResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        sender: 'ane',
-        content: responseContent,
-        timestamp: new Date()
+    // Process interview question responses
+    const allQuestions = getAllQuestions();
+    if (currentQuestionIndex < allQuestions.length) {
+      const currentQuestion = allQuestions[currentQuestionIndex];
+      const score = Math.random() * 3 + 7; // 7-10 score
+      
+      const interviewResponse: InterviewResponse = {
+        questionId: currentQuestion.id,
+        question: currentQuestion.question,
+        answer: response,
+        score: Math.round(score * 10) / 10,
+        analysis: "Resposta bem estruturada demonstrando conhecimento relevante."
       };
-      setMessages(prev => [...prev, aneResponse]);
+      
+      setInterviewResponses(prev => [...prev, interviewResponse]);
+      setCurrentQuestionIndex(prev => prev + 1);
+      
+      setTimeout(() => askNextQuestion(), 1500);
+    }
+  };
+
+  const askNextQuestion = () => {
+    const allQuestions = getAllQuestions();
+    
+    if (currentQuestionIndex >= allQuestions.length) {
+      completeInterview();
+      return;
+    }
+    
+    const nextQuestion = allQuestions[currentQuestionIndex];
+    addAneMessage(nextQuestion.question);
+  };
+
+  const addAneMessage = (content: string) => {
+    const aneMessage: Message = {
+      id: Date.now().toString(),
+      sender: "ane",
+      content,
+      timestamp: new Date(),
+    };
+    
+    setMessages(prev => [...prev, aneMessage]);
+  };
+
+  const completeInterview = () => {
+    setIsInterviewComplete(true);
+    
+    const avgScore = interviewResponses.reduce((sum, resp) => sum + resp.score, 0) / interviewResponses.length || 8;
+    const discProfiles = ['D-I', 'I-S', 'S-C', 'C-D'];
+    
+    const candidateResult: Omit<CandidateResult, 'id'> = {
+      name: candidateName || 'Candidato',
+      email: candidateEmail || 'email@exemplo.com',
+      jobId: jobId,
+      jobTitle: currentJob?.title || 'Vaga Demo',
+      overallScore: Math.round(avgScore * 10) / 10,
+      discProfile: discProfiles[Math.floor(Math.random() * discProfiles.length)],
+      technicalScore: Math.round((Math.random() * 2 + 8) * 10) / 10,
+      behavioralScore: Math.round((Math.random() * 2 + 7) * 10) / 10,
+      communicationScore: Math.round((Math.random() * 2 + 8) * 10) / 10,
+      summary: `Candidato demonstrou forte conhecimento e boa comunicação durante a entrevista.`,
+      strengths: ['Comunicação clara', 'Conhecimento técnico', 'Experiência prática'],
+      areasForImprovement: ['Gestão de tempo', 'Liderança de equipe'],
+      responses: interviewResponses,
+      interviewDate: new Date(),
+      status: avgScore >= 8 ? 'Aprovado' : avgScore >= 6 ? 'Em análise' : 'Reprovado',
+      reuseForOtherJobs: true
+    };
+    
+    addCandidateResult(candidateResult);
+    
+    setTimeout(() => {
+      addAneMessage(`Perfeito! Sua entrevista foi concluída. Seu desempenho geral foi de ${avgScore.toFixed(1)}/10. Os resultados foram salvos e você receberá um retorno em breve. Obrigada pela participação!`);
+      
+      toast({
+        title: "Entrevista concluída! 🎉",
+        description: `Escore final: ${avgScore.toFixed(1)}/10. Resultados salvos com sucesso.`
+      });
     }, 2000);
   };
 
@@ -98,7 +183,7 @@ const InterviewInterface = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-success/5">
       <div className="container mx-auto px-4 py-8">
-        {/* Gerenciador de Perguntas */}
+        {/* Question Manager */}
         <div className="max-w-4xl mx-auto mb-6">
           <QuestionManager
             questions={customQuestions}
@@ -108,22 +193,24 @@ const InterviewInterface = () => {
           />
         </div>
 
-        <Card className="max-w-4xl mx-auto shadow-primary border-0">
-          {/* Header da Entrevista */}
+        <Card className="max-w-4xl mx-auto shadow-card border-0">
+          {/* Header */}
           <div className="bg-gradient-primary p-6 rounded-t-lg">
             <div className="flex items-center justify-between text-white">
               <div>
                 <h1 className="text-2xl font-bold">Entrevista com Ane</h1>
-                <p className="opacity-90">Vaga: {candidateInfo.position}</p>
+                <p className="opacity-90">Vaga: {currentJob?.title || 'Demo'}</p>
               </div>
-              <div className="text-right">
-                <p className="font-semibold">{candidateInfo.name}</p>
-                <p className="opacity-90">{candidateInfo.company}</p>
-              </div>
+              {isInterviewComplete && (
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5" />
+                  <span>Concluída</span>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Area de Mensagens */}
+          {/* Messages */}
           <div className="h-96 overflow-y-auto p-6 bg-gradient-card">
             <div className="space-y-4">
               {messages.map((message) => (
@@ -131,7 +218,7 @@ const InterviewInterface = () => {
                   key={message.id}
                   className={`flex ${message.sender === 'candidate' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`flex items-start space-x-3 max-w-xs lg:max-w-md`}>
+                  <div className="flex items-start space-x-3 max-w-xs lg:max-w-md">
                     {message.sender === 'ane' && (
                       <Avatar className="bg-gradient-primary">
                         <AvatarFallback className="text-white font-semibold">Ane</AvatarFallback>
@@ -156,7 +243,7 @@ const InterviewInterface = () => {
                     {message.sender === 'candidate' && (
                       <Avatar className="bg-success">
                         <AvatarFallback className="text-white font-semibold">
-                          {candidateInfo.name.charAt(0)}
+                          {candidateName ? candidateName.charAt(0) : 'C'}
                         </AvatarFallback>
                       </Avatar>
                     )}
@@ -166,7 +253,7 @@ const InterviewInterface = () => {
             </div>
           </div>
 
-          {/* Input de Mensagem */}
+          {/* Input */}
           <div className="p-6 border-t bg-white rounded-b-lg">
             <div className="flex items-center space-x-3">
               <div className="flex-1">
@@ -176,6 +263,7 @@ const InterviewInterface = () => {
                   placeholder="Digite sua resposta aqui..."
                   onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                   className="border-border focus:ring-2 focus:ring-primary"
+                  disabled={isInterviewComplete}
                 />
               </div>
               
@@ -183,34 +271,19 @@ const InterviewInterface = () => {
                 onClick={toggleRecording}
                 variant={isRecording ? "destructive" : "outline"}
                 size="icon"
-                className="transition-all duration-300"
+                disabled={isInterviewComplete}
               >
                 {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
               </Button>
               
               <Button 
                 onClick={handleSendMessage}
-                className="bg-gradient-primary hover:shadow-hover transition-all duration-300"
+                className="bg-gradient-primary hover:shadow-hover"
+                disabled={isInterviewComplete}
               >
                 <Send className="h-4 w-4" />
               </Button>
             </div>
-            
-            <div className="mt-4 text-center">
-              <p className="text-sm text-muted-foreground">
-                💪 Lembre-se: não existem respostas certas ou erradas, seja autêntico!
-              </p>
-            </div>
-          </div>
-        </Card>
-        
-        {/* Mensagem Motivacional */}
-        <Card className="max-w-4xl mx-auto mt-6 p-4 bg-gradient-to-r from-success/10 to-accent/10 border-0">
-          <div className="text-center">
-            <p className="text-sm text-foreground">
-              ✨ <strong>Dica da Ane:</strong> Responda com naturalidade e conte suas experiências de forma clara. 
-              Estou aqui para te conhecer melhor e encontrar o melhor encaixe para você na Animaserv!
-            </p>
           </div>
         </Card>
       </div>

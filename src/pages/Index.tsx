@@ -2,17 +2,21 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import Dashboard from "@/components/Dashboard";
 import CandidateRanking from "@/components/CandidateRanking";
+import { JobManager } from "@/components/JobManager";
+import { CandidateDatabase } from "@/components/CandidateDatabase";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, Users, BarChart3, MessageSquare, Share2, Brain, Target, ClipboardList } from "lucide-react";
+import { PlusCircle, Users, BarChart3, MessageSquare, Share2, Brain, Target, ClipboardList, Database } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useAppContext } from "@/context/AppContext";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { jobs, candidates, addJob, updateJob, reuseCandidateForJob } = useAppContext();
 
   const generateInterviewLink = () => {
     const link = `${window.location.origin}/interview?job=dev-fullstack-001&token=candidate-${Date.now()}`;
@@ -39,22 +43,26 @@ const Index = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-white shadow-card">
+          <TabsList className="grid w-full grid-cols-5 bg-white shadow-card">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
               Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="jobs" className="flex items-center gap-2">
+              <PlusCircle className="h-4 w-4" />
+              Vagas
             </TabsTrigger>
             <TabsTrigger value="candidates" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               Candidatos
             </TabsTrigger>
+            <TabsTrigger value="database" className="flex items-center gap-2">
+              <Database className="h-4 w-4" />
+              Base Candidatos
+            </TabsTrigger>
             <TabsTrigger value="interviews" className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4" />
               Entrevistas
-            </TabsTrigger>
-            <TabsTrigger value="jobs" className="flex items-center gap-2">
-              <PlusCircle className="h-4 w-4" />
-              Vagas
             </TabsTrigger>
           </TabsList>
 
@@ -62,8 +70,24 @@ const Index = () => {
             <Dashboard />
           </TabsContent>
 
+          <TabsContent value="jobs">
+            <JobManager 
+              jobs={jobs}
+              onJobCreate={addJob}
+              onJobUpdate={updateJob}
+            />
+          </TabsContent>
+
           <TabsContent value="candidates">
             <CandidateRanking />
+          </TabsContent>
+
+          <TabsContent value="database">
+            <CandidateDatabase 
+              candidates={candidates}
+              availableJobs={jobs.map(j => ({ id: j.id, title: j.title }))}
+              onReuseCandidateForJob={reuseCandidateForJob}
+            />
           </TabsContent>
 
           <TabsContent value="interviews">
@@ -99,93 +123,6 @@ const Index = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="jobs">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="p-6 bg-gradient-card shadow-card border-0">
-                <h3 className="text-xl font-semibold text-foreground mb-4">Criar Nova Vaga</h3>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-medium text-foreground">Título da Vaga</label>
-                      <input 
-                        className="w-full mt-1 p-3 border border-border rounded-lg bg-white"
-                        placeholder="Ex: Desenvolvedor Full Stack"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-foreground">Área</label>
-                      <select className="w-full mt-1 p-3 border border-border rounded-lg bg-white">
-                        <option>Tecnologia</option>
-                        <option>Marketing</option>
-                        <option>Vendas</option>
-                        <option>RH</option>
-                      </select>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="text-sm font-medium text-foreground">Descrição da Vaga</label>
-                    <textarea 
-                      className="w-full mt-1 p-3 border border-border rounded-lg bg-white h-24"
-                      placeholder="Descreva as responsabilidades e requisitos..."
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-medium text-foreground">Nível</label>
-                      <select className="w-full mt-1 p-3 border border-border rounded-lg bg-white">
-                        <option>Júnior</option>
-                        <option>Pleno</option>
-                        <option>Sênior</option>
-                        <option>Especialista</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-foreground">Tipo de Contrato</label>
-                      <select className="w-full mt-1 p-3 border border-border rounded-lg bg-white">
-                        <option>CLT</option>
-                        <option>PJ</option>
-                        <option>Estágio</option>
-                        <option>Freelancer</option>
-                      </select>
-                    </div>
-                  </div>
-                  
-                  <Button className="w-full bg-gradient-primary hover:shadow-hover">
-                    <PlusCircle className="h-4 w-4 mr-2" />
-                    Criar Vaga e Configurar Entrevistas
-                  </Button>
-                </div>
-              </Card>
-
-              <Card className="p-6 bg-gradient-card shadow-card border-0">
-                <h3 className="text-xl font-semibold text-foreground mb-4">Vagas Ativas</h3>
-                <div className="space-y-4">
-                  {[
-                    { title: "Desenvolvedor Full Stack", candidates: 15, interviews: 8 },
-                    { title: "Analista de Marketing Digital", candidates: 23, interviews: 12 },
-                    { title: "Gerente de Vendas", candidates: 9, interviews: 5 },
-                  ].map((job, index) => (
-                    <div key={index} className="p-4 bg-white rounded-lg shadow-sm border border-border">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h4 className="font-medium text-foreground">{job.title}</h4>
-                          <p className="text-sm text-muted-foreground">
-                            {job.candidates} candidatos • {job.interviews} entrevistas
-                          </p>
-                        </div>
-                        <Button variant="outline" size="sm" onClick={generateInterviewLink}>
-                          <Share2 className="h-4 w-4 mr-1" />
-                          Link
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </div>
-          </TabsContent>
         </Tabs>
 
         {/* Seção de Testes Complementares */}
