@@ -1,9 +1,10 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { MessageCircle, Send, Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import QuestionManager, { CustomQuestion } from "./QuestionManager";
 
 interface Message {
   id: string;
@@ -24,6 +25,9 @@ const InterviewInterface = () => {
   
   const [inputMessage, setInputMessage] = useState('');
   const [isRecording, setIsRecording] = useState(false);
+  const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [hasStartedCustomQuestions, setHasStartedCustomQuestions] = useState(false);
 
   const candidateInfo = {
     name: "João Silva",
@@ -46,14 +50,45 @@ const InterviewInterface = () => {
 
     // Simular resposta da Ane
     setTimeout(() => {
+      let responseContent = '';
+      
+      if (!hasStartedCustomQuestions && customQuestions.length > 0) {
+        // Começar com as perguntas personalizadas
+        setHasStartedCustomQuestions(true);
+        responseContent = `Perfeito! Agora vou fazer algumas perguntas específicas que preparei para você. ${customQuestions[0].question}`;
+      } else if (hasStartedCustomQuestions && currentQuestionIndex < customQuestions.length - 1) {
+        // Próxima pergunta personalizada
+        const nextIndex = currentQuestionIndex + 1;
+        setCurrentQuestionIndex(nextIndex);
+        responseContent = `Ótima resposta! Próxima pergunta: ${customQuestions[nextIndex].question}`;
+      } else if (hasStartedCustomQuestions && currentQuestionIndex >= customQuestions.length - 1) {
+        // Finalizar perguntas personalizadas e continuar com perguntas gerais
+        responseContent = 'Excelente! Finalizamos as perguntas específicas. Agora vou fazer algumas perguntas gerais para conhecê-lo melhor. Conte-me sobre sua experiência com desenvolvimento web e quais tecnologias você mais utiliza no seu dia a dia.';
+      } else {
+        // Perguntas gerais quando não há perguntas personalizadas
+        responseContent = 'Que bom saber! Agora vou fazer algumas perguntas para conhecermos melhor seu perfil profissional. Primeira pergunta: Conte-me sobre sua experiência com desenvolvimento web e quais tecnologias você mais utiliza no seu dia a dia.';
+      }
+
       const aneResponse: Message = {
         id: (Date.now() + 1).toString(),
         sender: 'ane',
-        content: 'Que bom saber! Agora vou fazer algumas perguntas para conhecermos melhor seu perfil profissional. Primeira pergunta: Conte-me sobre sua experiência com desenvolvimento web e quais tecnologias você mais utiliza no seu dia a dia.',
+        content: responseContent,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, aneResponse]);
     }, 2000);
+  };
+
+  const handleAddQuestion = (question: CustomQuestion) => {
+    setCustomQuestions(prev => [...prev, question]);
+  };
+
+  const handleRemoveQuestion = (id: string) => {
+    setCustomQuestions(prev => prev.filter(q => q.id !== id));
+  };
+
+  const handleEditQuestion = (id: string, updatedQuestion: CustomQuestion) => {
+    setCustomQuestions(prev => prev.map(q => q.id === id ? updatedQuestion : q));
   };
 
   const toggleRecording = () => {
@@ -63,6 +98,16 @@ const InterviewInterface = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-success/5">
       <div className="container mx-auto px-4 py-8">
+        {/* Gerenciador de Perguntas */}
+        <div className="max-w-4xl mx-auto mb-6">
+          <QuestionManager
+            questions={customQuestions}
+            onAddQuestion={handleAddQuestion}
+            onRemoveQuestion={handleRemoveQuestion}
+            onEditQuestion={handleEditQuestion}
+          />
+        </div>
+
         <Card className="max-w-4xl mx-auto shadow-primary border-0">
           {/* Header da Entrevista */}
           <div className="bg-gradient-primary p-6 rounded-t-lg">
