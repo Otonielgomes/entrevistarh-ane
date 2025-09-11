@@ -1,4 +1,3 @@
-import animaservLogo from "@/assets/animaserv-logo.png";
 import { Users, BarChart3, PlusCircle, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -10,15 +9,10 @@ const Header = () => {
           <div className="flex items-center space-x-4">
             <div className="relative">
               <img 
-                src={animaservLogo} 
-                alt="Animaserv Recursos Humanos" 
-                className="h-12 w-12 rounded-xl bg-white/10 p-2 shadow-lg backdrop-blur-sm"
+                src="/lovable-uploads/2367ed51-06ad-4225-a9af-d83de6fd294e.png" 
+                alt="AnimaServ Recursos Humanos" 
+                className="h-14 w-auto max-w-[200px] object-contain"
               />
-              <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-success rounded-full border-2 border-white"></div>
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight">Animaserv</h1>
-              <p className="text-white/90 text-sm font-medium">Recursos Humanos • Seleção Inteligente</p>
             </div>
           </div>
           
