@@ -58,7 +58,7 @@ const Index = () => {
             </TabsTrigger>
             <TabsTrigger value="database" className="flex items-center gap-2">
               <Database className="h-4 w-4" />
-              Base Avaliações
+              Avaliações
             </TabsTrigger>
             <TabsTrigger value="interviews" className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4" />
