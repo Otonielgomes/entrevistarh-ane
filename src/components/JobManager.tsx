@@ -262,7 +262,18 @@ export const JobManager = ({ jobs, onJobCreate, onJobUpdate }: JobManagerProps) 
                 </div>
                 <div className="flex items-center text-sm text-muted-foreground">
                   <Brain className="h-4 w-4 mr-2" />
-                  {job.aiGeneratedQuestions.length} IA + {job.customQuestions.length} personalizadas
+                  {job.customQuestions.length > 0 ? (
+                    <span className="flex items-center gap-1">
+                      <span className="font-medium text-accent">{job.customQuestions.length} personalizadas</span>
+                      <span>+</span>
+                      <span>{job.aiGeneratedQuestions.length} IA</span>
+                      <span className="ml-1 px-1.5 py-0.5 bg-accent/10 text-accent text-xs rounded font-medium">
+                        Contexto Otimizado
+                      </span>
+                    </span>
+                  ) : (
+                    <span>{job.aiGeneratedQuestions.length} IA + {job.customQuestions.length} personalizadas</span>
+                  )}
                 </div>
                 <div className="flex items-center text-sm text-muted-foreground">
                   <Calendar className="h-4 w-4 mr-2" />

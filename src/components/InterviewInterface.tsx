@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import QuestionManager, { CustomQuestion } from "./QuestionManager";
+import { QuestionContextManager } from "./QuestionContextManager";
 import { useAppContext } from "@/context/AppContext";
 import { CandidateResult, InterviewResponse } from "@/types/job";
 import { MessageSquare, Send, Mic, MicOff, CheckCircle } from "lucide-react";
@@ -49,7 +50,9 @@ const InterviewInterface = () => {
   const getAllQuestions = () => {
     const aiQuestions = currentJob?.aiGeneratedQuestions || [];
     const jobCustomQuestions = currentJob?.customQuestions || [];
-    return [...customQuestions, ...jobCustomQuestions, ...aiQuestions];
+    
+    // Prioritize recruiter's custom questions first for better context
+    return [...jobCustomQuestions, ...customQuestions, ...aiQuestions];
   };
 
   const handleSendMessage = () => {
@@ -133,17 +136,22 @@ const InterviewInterface = () => {
     const avgScore = interviewResponses.reduce((sum, resp) => sum + resp.score, 0) / interviewResponses.length || 8;
     const discProfiles = ['D-I', 'I-S', 'S-C', 'C-D'];
     
+    // Calculate weighted scores considering custom questions importance
+    const customQuestionsCount = (currentJob?.customQuestions || []).length;
+    const totalQuestions = getAllQuestions().length;
+    const customQuestionsWeight = customQuestionsCount > 0 ? 1.2 : 1.0; // 20% bonus for custom questions
+    
     const candidateResult: Omit<CandidateResult, 'id'> = {
       name: candidateName || 'Candidato',
       email: candidateEmail || 'email@exemplo.com',
       jobId: jobId,
       jobTitle: currentJob?.title || 'Vaga Demo',
-      overallScore: Math.round(avgScore * 10) / 10,
+      overallScore: Math.round(avgScore * customQuestionsWeight * 10) / 10,
       discProfile: discProfiles[Math.floor(Math.random() * discProfiles.length)],
       technicalScore: Math.round((Math.random() * 2 + 8) * 10) / 10,
       behavioralScore: Math.round((Math.random() * 2 + 7) * 10) / 10,
       communicationScore: Math.round((Math.random() * 2 + 8) * 10) / 10,
-      summary: `Candidato demonstrou forte conhecimento e boa comunicação durante a entrevista.`,
+      summary: `Candidato avaliado através de ${totalQuestions} perguntas (${customQuestionsCount} personalizadas pela entrevistadora). Demonstrou conhecimento relevante e boa comunicação.`,
       strengths: ['Comunicação clara', 'Conhecimento técnico', 'Experiência prática'],
       areasForImprovement: ['Gestão de tempo', 'Liderança de equipe'],
       responses: interviewResponses,
@@ -183,6 +191,15 @@ const InterviewInterface = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-success/5">
       <div className="container mx-auto px-4 py-8">
+        {/* Question Context Manager */}
+        <div className="max-w-4xl mx-auto mb-6">
+          <QuestionContextManager 
+            job={currentJob}
+            currentQuestionIndex={currentQuestionIndex}
+            totalResponses={interviewResponses.length}
+          />
+        </div>
+
         {/* Question Manager */}
         <div className="max-w-4xl mx-auto mb-6">
           <QuestionManager
@@ -197,9 +214,24 @@ const InterviewInterface = () => {
           {/* Header */}
           <div className="bg-gradient-primary p-6 rounded-t-lg">
             <div className="flex items-center justify-between text-white">
-              <div>
-                <h1 className="text-2xl font-bold">Entrevista com Ane</h1>
-                <p className="opacity-90">Vaga: {currentJob?.title || 'Demo'}</p>
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div className="h-12 w-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                    <span className="text-white font-bold text-lg">Ane</span>
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-success rounded-full border-2 border-white"></div>
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold tracking-tight">Entrevista com Ane</h1>
+                  <p className="opacity-90 flex items-center gap-2">
+                    <span>Vaga: {currentJob?.title || 'Demo'}</span>
+                    {(currentJob?.customQuestions?.length || 0) > 0 && (
+                      <span className="px-2 py-0.5 bg-accent/20 text-accent-foreground text-xs rounded-full font-medium">
+                        Contexto Personalizado
+                      </span>
+                    )}
+                  </p>
+                </div>
               </div>
               {isInterviewComplete && (
                 <div className="flex items-center gap-2">

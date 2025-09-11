@@ -107,28 +107,44 @@ export const CustomQuestionsManager = ({
     <div className="space-y-4">
       <div>
         <h3 className="text-lg font-semibold text-foreground mb-2">
-          Perguntas Complementares da Recrutadora
+          Perguntas Complementares da Entrevistadora
         </h3>
         <p className="text-sm text-muted-foreground mb-4">
-          Adicione perguntas específicas para avaliar aspectos únicos desta vaga.
-          {jobContext && " Considere o contexto da vaga ao elaborar as perguntas."}
+          <span className="font-medium text-accent">Contexto Personalizado:</span> Estas perguntas são específicas para esta vaga e serão apresentadas 
+          <span className="font-medium"> antes das perguntas da IA</span>, garantindo maior assertividade na avaliação.
+          {jobContext && (
+            <>
+              <br />
+              <span className="italic">💡 A IA já analisou o contexto da vaga - use isso para criar perguntas complementares mais direcionadas.</span>
+            </>
+          )}
         </p>
       </div>
 
       {/* Formulário de nova pergunta */}
-      <Card className="p-4 bg-gradient-card shadow-card border-0">
+      <Card className="p-4 bg-gradient-card shadow-card border-0 border-l-4 border-l-accent">
         <div className="space-y-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="h-2 w-2 bg-accent rounded-full animate-pulse"></div>
+            <span className="text-xs font-medium text-accent uppercase tracking-wide">
+              Prioridade Alta - Pergunta da Entrevistadora
+            </span>
+          </div>
+          
           <div className="space-y-2">
             <Label htmlFor="custom-question">
-              {editingId ? "Editar Pergunta" : "Nova Pergunta Complementar"}
+              {editingId ? "Editar Pergunta Personalizada" : "Nova Pergunta Complementar"}
             </Label>
             <Textarea
               id="custom-question"
-              placeholder="Ex: Como você aplicaria metodologias ágeis no contexto específico desta posição?"
+              placeholder="Ex: Considerando o contexto específico desta vaga, como você aplicaria [conceito relevante] em situações práticas do dia a dia?"
               value={newQuestion.question}
               onChange={(e) => setNewQuestion(prev => ({ ...prev, question: e.target.value }))}
-              className="min-h-20"
+              className="min-h-20 focus:ring-2 focus:ring-accent"
             />
+            <p className="text-xs text-muted-foreground">
+              💡 Dica: Perguntas específicas do contexto da vaga têm peso maior na avaliação final
+            </p>
           </div>
 
           <div className="space-y-2">

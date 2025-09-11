@@ -7,15 +7,18 @@ const Header = () => {
     <header className="bg-gradient-primary shadow-primary border-b">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <img 
-              src={animaservLogo} 
-              alt="Animaserv Logo" 
-              className="h-10 w-10 rounded-lg bg-white/20 p-1"
-            />
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <img 
+                src={animaservLogo} 
+                alt="Animaserv Recursos Humanos" 
+                className="h-12 w-12 rounded-xl bg-white/10 p-2 shadow-lg backdrop-blur-sm"
+              />
+              <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-success rounded-full border-2 border-white"></div>
+            </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Animaserv</h1>
-              <p className="text-white/80 text-sm">Plataforma de Seleção Inteligente</p>
+              <h1 className="text-2xl font-bold text-white tracking-tight">Animaserv</h1>
+              <p className="text-white/90 text-sm font-medium">Recursos Humanos • Seleção Inteligente</p>
             </div>
           </div>
           
