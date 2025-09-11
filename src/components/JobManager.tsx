@@ -8,8 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Job, AIQuestion } from "@/types/job";
+import { Job, AIQuestion, CustomQuestion } from "@/types/job";
 import { AIJobAnalyzer } from "./AIJobAnalyzer";
+import { CustomQuestionsManager } from "./CustomQuestionsManager";
+import { AIConfigManager } from "./AIConfigManager";
+import { InterviewLinkSender } from "./InterviewLinkSender";
 import { PlusCircle, Briefcase, Users, Calendar, Settings, Brain, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,6 +32,7 @@ export const JobManager = ({ jobs, onJobCreate, onJobUpdate }: JobManagerProps) 
     contractType: ''
   });
   const [aiQuestions, setAiQuestions] = useState<AIQuestion[]>([]);
+  const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { toast } = useToast();
 
@@ -50,13 +54,14 @@ export const JobManager = ({ jobs, onJobCreate, onJobUpdate }: JobManagerProps) 
       contractType: formData.contractType as Job['contractType'],
       requirements: [],
       aiGeneratedQuestions: aiQuestions,
-      customQuestions: [],
+      customQuestions: customQuestions,
       status: 'Ativa'
     };
 
     onJobCreate(newJob);
     setFormData({ title: '', area: '', description: '', level: '', contractType: '' });
     setAiQuestions([]);
+    setCustomQuestions([]);
     setIsCreateDialogOpen(false);
     
     toast({
@@ -90,6 +95,9 @@ export const JobManager = ({ jobs, onJobCreate, onJobUpdate }: JobManagerProps) 
         <div>
           <h2 className="text-2xl font-bold text-foreground">Gerenciamento de Vagas</h2>
           <p className="text-muted-foreground">Crie vagas inteligentes com perguntas geradas por IA</p>
+        </div>
+        <div className="flex gap-2">
+          <AIConfigManager />
         </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
@@ -191,6 +199,17 @@ export const JobManager = ({ jobs, onJobCreate, onJobUpdate }: JobManagerProps) 
                 </>
               )}
 
+              {(aiQuestions.length > 0 || formData.description) && (
+                <>
+                  <Separator />
+                  <CustomQuestionsManager
+                    questions={customQuestions}
+                    onQuestionsChange={setCustomQuestions}
+                    jobContext={formData.description}
+                  />
+                </>
+              )}
+
               <div className="flex justify-end gap-3 pt-4">
                 <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
                   Cancelar
@@ -243,7 +262,7 @@ export const JobManager = ({ jobs, onJobCreate, onJobUpdate }: JobManagerProps) 
                 </div>
                 <div className="flex items-center text-sm text-muted-foreground">
                   <Brain className="h-4 w-4 mr-2" />
-                  {job.aiGeneratedQuestions.length} perguntas IA
+                  {job.aiGeneratedQuestions.length} IA + {job.customQuestions.length} personalizadas
                 </div>
                 <div className="flex items-center text-sm text-muted-foreground">
                   <Calendar className="h-4 w-4 mr-2" />
@@ -252,14 +271,17 @@ export const JobManager = ({ jobs, onJobCreate, onJobUpdate }: JobManagerProps) 
               </div>
 
               <div className="flex gap-2 pt-2">
+                <InterviewLinkSender 
+                  jobId={job.id}
+                  jobTitle={job.title}
+                />
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={() => generateInterviewLink(job.id)}
-                  className="flex-1"
                 >
                   <Share2 className="h-4 w-4 mr-1" />
-                  Link
+                  Copiar
                 </Button>
                 <Button variant="outline" size="sm">
                   <Settings className="h-4 w-4" />
