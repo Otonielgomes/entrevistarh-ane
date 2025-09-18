@@ -14,7 +14,121 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_questions: {
+        Row: {
+          category: string
+          created_at: string
+          difficulty: string
+          expected_keywords: string[]
+          id: string
+          job_id: string
+          question: string
+          scoring_criteria: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          difficulty: string
+          expected_keywords?: string[]
+          id?: string
+          job_id: string
+          question: string
+          scoring_criteria: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          difficulty?: string
+          expected_keywords?: string[]
+          id?: string
+          job_id?: string
+          question?: string
+          scoring_criteria?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_questions_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      custom_questions: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          job_id: string
+          question: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          job_id: string
+          question: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          job_id?: string
+          question?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_questions_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jobs: {
+        Row: {
+          area: string
+          candidates_applied: number
+          contract_type: string
+          created_at: string
+          description: string
+          id: string
+          level: string
+          requirements: string[]
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          area: string
+          candidates_applied?: number
+          contract_type: string
+          created_at?: string
+          description: string
+          id?: string
+          level: string
+          requirements?: string[]
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          area?: string
+          candidates_applied?: number
+          contract_type?: string
+          created_at?: string
+          description?: string
+          id?: string
+          level?: string
+          requirements?: string[]
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
