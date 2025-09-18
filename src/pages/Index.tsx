@@ -4,8 +4,10 @@ import Dashboard from "@/components/Dashboard";
 import CandidateRanking from "@/components/CandidateRanking";
 import { JobManager } from "@/components/JobManager";
 import { CandidateDatabase } from "@/components/CandidateDatabase";
+import { TestLinkSender } from "@/components/TestLinkSender";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlusCircle, Users, BarChart3, MessageSquare, Share2, Brain, Target, ClipboardList, Database } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -126,46 +128,96 @@ const Index = () => {
         </Tabs>
 
         {/* Seção de Testes Complementares */}
-        <div className="grid md:grid-cols-2 gap-6 mt-8">
-          <Card className="p-6 bg-gradient-to-r from-accent/10 to-primary/10 border-0 text-center">
-            <div className="bg-gradient-primary w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Target className="h-8 w-8 text-white" />
-            </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">
-              Teste Vocacional
-            </h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Descubra as áreas profissionais que mais se adequam ao perfil do candidato através de perguntas geradas dinamicamente por IA
-            </p>
-            <Button 
-              variant="hero" 
-              onClick={() => navigate("/teste-vocacional")}
-              className="w-full"
-            >
-              <Target className="h-4 w-4 mr-2" />
-              Iniciar Teste Vocacional
-            </Button>
-          </Card>
+        <div className="space-y-6 mt-8">
+          <h2 className="text-2xl font-semibold text-foreground text-center">
+            Avaliações de Perfil Profissional
+          </h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Teste Vocacional */}
+            <Card className="p-6 bg-gradient-card shadow-card border-0 hover:shadow-hover transition-all">
+              <div className="flex items-start justify-between mb-4">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Target className="h-8 w-8 text-primary" />
+                    <div>
+                      <h3 className="text-xl font-semibold text-foreground">Teste Vocacional</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Descubra suas áreas de afinidade profissional
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-foreground">
+                    Avalie interesses e preferências para identificar carreiras que se alinham 
+                    com o perfil do candidato usando 6 perguntas geradas por IA.
+                  </p>
+                  
+                  <div className="flex gap-2">
+                    <Badge variant="secondary" className="bg-success/10 text-success">
+                      15-20 min
+                    </Badge>
+                    <Badge variant="secondary" className="bg-accent/10 text-accent">
+                      6 perguntas IA
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <Button 
+                  onClick={() => navigate("/teste-vocacional")}
+                  className="flex-1 bg-gradient-primary hover:shadow-hover"
+                >
+                  <Target className="h-4 w-4 mr-2" />
+                  Iniciar Teste
+                </Button>
+                <TestLinkSender testType="vocational" />
+              </div>
+            </Card>
 
-          <Card className="p-6 bg-gradient-to-r from-success/10 to-accent/10 border-0 text-center">
-            <div className="bg-gradient-primary w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Brain className="h-8 w-8 text-white" />
-            </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">
-              Teste Comportamental
-            </h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Análise do perfil DISC do candidato para identificar características comportamentais e estilo de trabalho
-            </p>
-            <Button 
-              variant="hero" 
-              onClick={() => navigate("/teste-comportamental")}
-              className="w-full"
-            >
-              <Brain className="h-4 w-4 mr-2" />
-              Iniciar Teste Comportamental
-            </Button>
-          </Card>
+            {/* Teste Comportamental */}
+            <Card className="p-6 bg-gradient-card shadow-card border-0 hover:shadow-hover transition-all">
+              <div className="flex items-start justify-between mb-4">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Brain className="h-8 w-8 text-primary" />
+                    <div>
+                      <h3 className="text-xl font-semibold text-foreground">Teste Comportamental</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Análise do perfil comportamental DISC
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-foreground">
+                    Identifica padrões comportamentais baseados no modelo DISC para 
+                    otimizar a adequação às vagas com 6 perguntas otimizadas.
+                  </p>
+                  
+                  <div className="flex gap-2">
+                    <Badge variant="secondary" className="bg-success/10 text-success">
+                      10-15 min
+                    </Badge>
+                    <Badge variant="secondary" className="bg-accent/10 text-accent">
+                      Modelo DISC
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <Button 
+                  onClick={() => navigate("/teste-comportamental")}
+                  className="flex-1 bg-gradient-primary hover:shadow-hover"
+                >
+                  <Brain className="h-4 w-4 mr-2" />
+                  Iniciar Teste
+                </Button>
+                <TestLinkSender testType="behavioral" />
+              </div>
+            </Card>
+          </div>
         </div>
 
         {/* Call to Action para Entrevista Demo */}

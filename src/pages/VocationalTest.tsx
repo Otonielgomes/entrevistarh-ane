@@ -29,90 +29,106 @@ const VocationalTest = () => {
   const [showResults, setShowResults] = useState(false);
   const [testResult, setTestResult] = useState<TestResult | null>(null);
 
-  // Perguntas geradas dinamicamente (simulando IA)
+  // Perguntas geradas por IA otimizadas para avaliação de perfil de vaga
   const questions: Question[] = [
     {
       id: 1,
-      text: "Quando você precisa resolver um problema complexo, qual abordagem prefere?",
+      text: "Qual área de trabalho desperta mais seu interesse e motivação profissional?",
       options: [
-        { id: "a", text: "Analisar dados e criar soluções estruturadas", areas: ["tecnologia", "ciencias"] },
-        { id: "b", text: "Conversar com pessoas para entender diferentes perspectivas", areas: ["humanas", "comunicacao"] },
-        { id: "c", text: "Buscar soluções criativas e inovadoras", areas: ["criativas", "design"] },
-        { id: "d", text: "Focar nos aspectos práticos e resultados financeiros", areas: ["negocios", "financas"] }
+        { id: "a", text: "Desenvolvimento de software e inovação tecnológica", areas: ["tecnologia", "engenharia"] },
+        { id: "b", text: "Estratégia empresarial e gestão de pessoas", areas: ["negocios", "gestao"] },
+        { id: "c", text: "Design, criação e expressão visual", areas: ["criativas", "marketing"] },
+        { id: "d", text: "Análise de dados e resolução de problemas complexos", areas: ["ciencias", "pesquisa"] },
+        { id: "e", text: "Atendimento e relacionamento com pessoas", areas: ["humanas", "comunicacao"] }
       ]
     },
     {
       id: 2,
-      text: "Em seu tempo livre, você prefere atividades que envolvam:",
+      text: "Em qual ambiente você se sente mais produtivo e engajado?",
       options: [
-        { id: "a", text: "Aprender novas tecnologias ou ferramentas", areas: ["tecnologia", "ciencias"] },
-        { id: "b", text: "Atividades sociais e trabalho voluntário", areas: ["humanas", "saude"] },
-        { id: "c", text: "Projetos artísticos ou criativos", areas: ["criativas", "design"] },
-        { id: "d", text: "Planejamento financeiro ou investimentos", areas: ["negocios", "financas"] }
+        { id: "a", text: "Laboratórios de pesquisa e centros de inovação", areas: ["ciencias", "tecnologia"] },
+        { id: "b", text: "Escritórios corporativos e salas de reunião", areas: ["negocios", "gestao"] },
+        { id: "c", text: "Estúdios criativos e espaços colaborativos", areas: ["criativas", "design"] },
+        { id: "d", text: "Ambientes hospitalares e clínicas", areas: ["saude", "cuidados"] },
+        { id: "e", text: "Espaços comerciais e pontos de venda", areas: ["vendas", "relacionamento"] }
       ]
     },
     {
       id: 3,
-      text: "Como você prefere trabalhar?",
+      text: "Que tipo de desafio profissional mais te motiva a buscar excelência?",
       options: [
-        { id: "a", text: "De forma independente, focado em projetos técnicos", areas: ["tecnologia", "ciencias"] },
-        { id: "b", text: "Em equipe, ajudando pessoas a alcançarem seus objetivos", areas: ["humanas", "educacao"] },
-        { id: "c", text: "Em ambiente criativo com liberdade de expressão", areas: ["criativas", "marketing"] },
-        { id: "d", text: "Liderando equipes e tomando decisões estratégicas", areas: ["negocios", "gestao"] }
+        { id: "a", text: "Desenvolver soluções tecnológicas inovadoras", areas: ["tecnologia", "inovacao"] },
+        { id: "b", text: "Liderar equipes e alcançar metas organizacionais", areas: ["lideranca", "gestao"] },
+        { id: "c", text: "Criar campanhas visuais impactantes", areas: ["criativas", "marketing"] },
+        { id: "d", text: "Realizar pesquisas científicas e descobertas", areas: ["pesquisa", "ciencias"] },
+        { id: "e", text: "Construir relacionamentos duradouros com clientes", areas: ["relacionamento", "vendas"] }
       ]
     },
     {
       id: 4,
-      text: "Qual tipo de desafio mais te motiva?",
+      text: "Qual habilidade você considera seu maior diferencial profissional?",
       options: [
-        { id: "a", text: "Criar soluções inovadoras para problemas técnicos", areas: ["tecnologia", "engenharia"] },
-        { id: "b", text: "Impactar positivamente a vida das pessoas", areas: ["saude", "educacao"] },
-        { id: "c", text: "Expressar ideias através de arte ou comunicação", areas: ["criativas", "comunicacao"] },
-        { id: "d", text: "Construir negócios prósperos e sustentáveis", areas: ["negocios", "empreendedorismo"] }
+        { id: "a", text: "Programação e domínio de tecnologias emergentes", areas: ["tecnologia", "programacao"] },
+        { id: "b", text: "Liderança e visão estratégica de negócios", areas: ["lideranca", "estrategia"] },
+        { id: "c", text: "Criatividade e senso estético apurado", areas: ["criativas", "design"] },
+        { id: "d", text: "Pensamento analítico e metodologia científica", areas: ["analitica", "ciencias"] },
+        { id: "e", text: "Comunicação persuasiva e empatia", areas: ["comunicacao", "persuasao"] }
       ]
     },
     {
       id: 5,
-      text: "Ao aprender algo novo, você prefere:",
+      text: "Que tipo de resultado profissional te dá maior satisfação pessoal?",
       options: [
-        { id: "a", text: "Estudar a teoria e fazer experimentos práticos", areas: ["ciencias", "pesquisa"] },
-        { id: "b", text: "Aprender através de interação e casos reais", areas: ["humanas", "psicologia"] },
-        { id: "c", text: "Explorar através de experimentação criativa", areas: ["criativas", "design"] },
-        { id: "d", text: "Focar em aplicações práticas e retorno", areas: ["negocios", "administracao"] }
+        { id: "a", text: "Lançar produtos tecnológicos que impactem milhões de usuários", areas: ["tecnologia", "produto"] },
+        { id: "b", text: "Construir empresas sustentáveis e equipes de alta performance", areas: ["empreendedorismo", "lideranca"] },
+        { id: "c", text: "Criar peças visuais que inspirem e emocionem pessoas", areas: ["criativas", "inspiracao"] },
+        { id: "d", text: "Publicar descobertas científicas que avancem o conhecimento", areas: ["pesquisa", "conhecimento"] },
+        { id: "e", text: "Ajudar pessoas a tomarem decisões importantes em suas vidas", areas: ["consultoria", "ajuda"] }
+      ]
+    },
+    {
+      id: 6,
+      text: "Em qual setor você visualiza maior potencial de crescimento para sua carreira?",
+      options: [
+        { id: "a", text: "Startups de tecnologia e empresas de inovação", areas: ["startup", "inovacao"] },
+        { id: "b", text: "Consultorias estratégicas e grandes corporações", areas: ["consultoria", "corporativo"] },
+        { id: "c", text: "Agências de publicidade e produtoras de conteúdo", areas: ["agencia", "conteudo"] },
+        { id: "d", text: "Universidades e institutos de pesquisa", areas: ["academico", "pesquisa"] },
+        { id: "e", text: "Empresas de relacionamento com cliente e vendas B2B", areas: ["b2b", "relacionamento"] }
       ]
     }
   ];
 
   const areaDescriptions = {
     tecnologia: {
-      name: "Tecnologia",
-      description: "Você tem afinidade com desenvolvimento, programação e soluções tecnológicas.",
-      careers: ["Desenvolvedor de Software", "Engenheiro de Dados", "Arquiteto de Sistemas", "DevOps", "Cybersecurity"]
+      name: "Tecnologia e Desenvolvimento",
+      description: "Você tem forte afinidade com desenvolvimento, programação e soluções tecnológicas inovadoras.",
+      careers: ["Desenvolvedor Full Stack", "Engenheiro de Software", "Arquiteto de Sistemas", "Tech Lead", "CTO"]
     },
     ciencias: {
-      name: "Ciências Exatas",
-      description: "Você se destaca em análise lógica, matemática e pesquisa científica.",
-      careers: ["Cientista de Dados", "Pesquisador", "Analista Financeiro", "Estatístico", "Matemático Aplicado"]
-    },
-    humanas: {
-      name: "Ciências Humanas",
-      description: "Você tem facilidade para lidar com pessoas e questões sociais.",
-      careers: ["Psicólogo", "Assistente Social", "Recursos Humanos", "Antropólogo", "Sociólogo"]
-    },
-    saude: {
-      name: "Saúde",
-      description: "Você tem vocação para cuidar e melhorar a qualidade de vida das pessoas.",
-      careers: ["Médico", "Enfermeiro", "Fisioterapeuta", "Nutricionista", "Terapeuta Ocupacional"]
-    },
-    criativas: {
-      name: "Áreas Criativas",
-      description: "Você tem talento para expressão artística e soluções criativas.",
-      careers: ["Designer Gráfico", "Publicitário", "Arquiteto", "Diretor de Arte", "Escritor"]
+      name: "Ciências e Pesquisa",
+      description: "Você se destaca em análise científica, pesquisa metodológica e descoberta de conhecimento.",
+      careers: ["Cientista de Dados", "Pesquisador Científico", "Analista de Pesquisa", "Data Scientist", "Especialista em IA"]
     },
     negocios: {
-      name: "Negócios",
-      description: "Você tem perfil empreendedor e visão estratégica de mercado.",
-      careers: ["Gerente de Produtos", "Consultor Empresarial", "Analista de Negócios", "Empreendedor", "Estrategista"]
+      name: "Negócios e Estratégia", 
+      description: "Você tem visão empresarial aguçada e habilidades para estratégia de negócios.",
+      careers: ["Gerente de Produtos", "Consultor Estratégico", "Analista de Negócios", "Product Manager", "CEO/Executivo"]
+    },
+    criativas: {
+      name: "Áreas Criativas e Design",
+      description: "Você possui talento natural para expressão visual, criatividade e comunicação através da arte.",
+      careers: ["Designer UX/UI", "Diretor de Arte", "Designer Gráfico", "Creative Director", "Motion Designer"]
+    },
+    lideranca: {
+      name: "Liderança e Gestão",
+      description: "Você tem características naturais de liderança e capacidade para gestão de pessoas e projetos.",
+      careers: ["Gerente Geral", "Diretor de Operações", "Líder de Equipe", "Scrum Master", "Head de Departamento"]
+    },
+    relacionamento: {
+      name: "Relacionamento e Vendas",
+      description: "Você se destaca em construir relacionamentos e tem facilidade para comunicação e persuasão.",
+      careers: ["Gerente de Vendas", "Account Manager", "Consultor Comercial", "Sales Director", "Business Development"]
     }
   };
 
@@ -148,10 +164,20 @@ const VocationalTest = () => {
       }
     });
 
-    const sortedAreas = Object.entries(areaScores)
+    // Agrupar áreas relacionadas
+    const groupedScores: Record<string, number> = {
+      tecnologia: (areaScores["tecnologia"] || 0) + (areaScores["programacao"] || 0) + (areaScores["inovacao"] || 0) + (areaScores["produto"] || 0) + (areaScores["startup"] || 0),
+      ciencias: (areaScores["ciencias"] || 0) + (areaScores["pesquisa"] || 0) + (areaScores["analitica"] || 0) + (areaScores["conhecimento"] || 0) + (areaScores["academico"] || 0),
+      negocios: (areaScores["negocios"] || 0) + (areaScores["gestao"] || 0) + (areaScores["estrategia"] || 0) + (areaScores["corporativo"] || 0) + (areaScores["consultoria"] || 0),
+      criativas: (areaScores["criativas"] || 0) + (areaScores["design"] || 0) + (areaScores["marketing"] || 0) + (areaScores["inspiracao"] || 0) + (areaScores["agencia"] || 0) + (areaScores["conteudo"] || 0),
+      lideranca: (areaScores["lideranca"] || 0) + (areaScores["empreendedorismo"] || 0) + (areaScores["persuasao"] || 0),
+      relacionamento: (areaScores["relacionamento"] || 0) + (areaScores["vendas"] || 0) + (areaScores["comunicacao"] || 0) + (areaScores["ajuda"] || 0) + (areaScores["b2b"] || 0)
+    };
+
+    const sortedAreas = Object.entries(groupedScores)
       .map(([area, score]) => ({
         name: areaDescriptions[area as keyof typeof areaDescriptions]?.name || area,
-        score: (score / questions.length) * 100,
+        score: Math.max(20, (score / questions.length) * 100), // Mínimo de 20% para visualização
         description: areaDescriptions[area as keyof typeof areaDescriptions]?.description || "",
         careers: areaDescriptions[area as keyof typeof areaDescriptions]?.careers || []
       }))
