@@ -164,20 +164,57 @@ const VocationalTest = () => {
       }
     });
 
-    // Agrupar áreas relacionadas
+    // Agrupar áreas relacionadas para maior assertividade
     const groupedScores: Record<string, number> = {
-      tecnologia: (areaScores["tecnologia"] || 0) + (areaScores["programacao"] || 0) + (areaScores["inovacao"] || 0) + (areaScores["produto"] || 0) + (areaScores["startup"] || 0),
-      ciencias: (areaScores["ciencias"] || 0) + (areaScores["pesquisa"] || 0) + (areaScores["analitica"] || 0) + (areaScores["conhecimento"] || 0) + (areaScores["academico"] || 0),
-      negocios: (areaScores["negocios"] || 0) + (areaScores["gestao"] || 0) + (areaScores["estrategia"] || 0) + (areaScores["corporativo"] || 0) + (areaScores["consultoria"] || 0),
-      criativas: (areaScores["criativas"] || 0) + (areaScores["design"] || 0) + (areaScores["marketing"] || 0) + (areaScores["inspiracao"] || 0) + (areaScores["agencia"] || 0) + (areaScores["conteudo"] || 0),
-      lideranca: (areaScores["lideranca"] || 0) + (areaScores["empreendedorismo"] || 0) + (areaScores["persuasao"] || 0),
-      relacionamento: (areaScores["relacionamento"] || 0) + (areaScores["vendas"] || 0) + (areaScores["comunicacao"] || 0) + (areaScores["ajuda"] || 0) + (areaScores["b2b"] || 0)
+      tecnologia: (areaScores["tecnologia"] || 0) + (areaScores["programacao"] || 0) + (areaScores["inovacao"] || 0) + 
+                  (areaScores["produto"] || 0) + (areaScores["startup"] || 0) + (areaScores["digital"] || 0) +
+                  (areaScores["tecnico"] || 0) + (areaScores["hands-on"] || 0) + (areaScores["debugging"] || 0) + 
+                  (areaScores["sistema"] || 0) + (areaScores["lider-tech"] || 0) + (areaScores["desenvolvimento"] || 0) + 
+                  (areaScores["futuro-tech"] || 0),
+                  
+      ciencias: (areaScores["ciencias"] || 0) + (areaScores["pesquisa"] || 0) + (areaScores["analitica"] || 0) + 
+                (areaScores["descoberta"] || 0) + (areaScores["conhecimento"] || 0) + (areaScores["academico"] || 0) +
+                (areaScores["cientifico"] || 0) + (areaScores["metodico"] || 0) + (areaScores["teoria"] || 0) + 
+                (areaScores["conferencias"] || 0) + (areaScores["estudo"] || 0) + (areaScores["publicacoes"] || 0) + 
+                (areaScores["citacoes"] || 0) + (areaScores["investigacao"] || 0) + (areaScores["pesquisa-profunda"] || 0) + 
+                (areaScores["analise"] || 0) + (areaScores["pesquisador-senior"] || 0) + (areaScores["professor"] || 0) + 
+                (areaScores["academico-senior"] || 0),
+                
+      negocios: (areaScores["negocios"] || 0) + (areaScores["gestao"] || 0) + (areaScores["corporativo"] || 0) + 
+                (areaScores["estrategico"] || 0) + (areaScores["consultoria"] || 0) + (areaScores["multinacional"] || 0) +
+                (areaScores["estrategia"] || 0) + (areaScores["visao"] || 0) + (areaScores["empresa"] || 0) + 
+                (areaScores["crescimento"] || 0) + (areaScores["mba"] || 0) + (areaScores["executivo"] || 0) + 
+                (areaScores["formal"] || 0) + (areaScores["promocoes"] || 0) + (areaScores["responsabilidade"] || 0) +
+                (areaScores["organizacional"] || 0) + (areaScores["gestao-pessoas"] || 0) + (areaScores["ceo"] || 0) + 
+                (areaScores["sociedade"] || 0) + (areaScores["empreendedor"] || 0),
+                
+      criativas: (areaScores["criativas"] || 0) + (areaScores["design"] || 0) + (areaScores["marketing"] || 0) + 
+                 (areaScores["inspiracao"] || 0) + (areaScores["agencia"] || 0) + (areaScores["conteudo"] || 0) +
+                 (areaScores["colaborativo"] || 0) + (areaScores["experiencia"] || 0) + (areaScores["criatividade"] || 0) + 
+                 (areaScores["estetica"] || 0) + (areaScores["arte"] || 0) + (areaScores["visual"] || 0) + 
+                 (areaScores["emocao"] || 0) + (areaScores["publicidade"] || 0) + (areaScores["tendencias"] || 0) + 
+                 (areaScores["workshops"] || 0) + (areaScores["exploracao"] || 0) + (areaScores["premios"] || 0) + 
+                 (areaScores["artistico"] || 0) + (areaScores["criativo"] || 0) + (areaScores["briefs"] || 0) + 
+                 (areaScores["conceitos"] || 0) + (areaScores["inovacao-criativa"] || 0) + (areaScores["agencia-propria"] || 0) + 
+                 (areaScores["freelancer"] || 0) + (areaScores["criativo-independente"] || 0),
+                 
+      lideranca: (areaScores["lideranca"] || 0) + (areaScores["gestao"] || 0) + (areaScores["resultados"] || 0) + 
+                 (areaScores["performance"] || 0) + (areaScores["sustentabilidade"] || 0) + (areaScores["conflitos"] || 0),
+                 
+      relacionamento: (areaScores["relacionamento"] || 0) + (areaScores["comunicacao"] || 0) + (areaScores["vendas"] || 0) + 
+                      (areaScores["comercial"] || 0) + (areaScores["b2b"] || 0) + (areaScores["cliente"] || 0) +
+                      (areaScores["confianca"] || 0) + (areaScores["networking"] || 0) + (areaScores["emocional"] || 0) + 
+                      (areaScores["persuasao"] || 0) + (areaScores["ajuda"] || 0) + (areaScores["transformacao"] || 0) + 
+                      (areaScores["decisoes"] || 0) + (areaScores["mentoria"] || 0) + (areaScores["feedback"] || 0) + 
+                      (areaScores["impacto-pessoas"] || 0) + (areaScores["satisfacao"] || 0) + (areaScores["necessidades-cliente"] || 0) + 
+                      (areaScores["personalizacao"] || 0) + (areaScores["atendimento"] || 0) + (areaScores["consultoria-propria"] || 0) + 
+                      (areaScores["especialista-b2b"] || 0) + (areaScores["relacionamento-senior"] || 0)
     };
 
     const sortedAreas = Object.entries(groupedScores)
       .map(([area, score]) => ({
         name: areaDescriptions[area as keyof typeof areaDescriptions]?.name || area,
-        score: Math.max(20, (score / questions.length) * 100), // Mínimo de 20% para visualização
+        score: Math.max(15, (score / (questions.length * 0.3)) * 100), // Ajuste para 10 perguntas
         description: areaDescriptions[area as keyof typeof areaDescriptions]?.description || "",
         careers: areaDescriptions[area as keyof typeof areaDescriptions]?.careers || []
       }))
