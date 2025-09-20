@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Job, AIQuestion, CustomQuestion, CandidateResult } from '@/types/job';
 import { useToast } from '@/hooks/use-toast';
+import { useAIQuestionGenerator } from './useAIQuestionGenerator';
 
 export const useJobs = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [candidates, setCandidates] = useState<CandidateResult[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { generateOptimizedQuestions } = useAIQuestionGenerator();
 
   // Carregar jobs do Supabase
   const fetchJobs = async () => {
@@ -92,21 +94,15 @@ export const useJobs = () => {
 
       if (error) throw error;
 
-      // Adicionar perguntas de IA se existirem
-      if (jobData.aiGeneratedQuestions.length > 0) {
-        await supabase
-          .from('ai_questions')
-          .insert(
-            jobData.aiGeneratedQuestions.map(q => ({
-              job_id: data.id,
-              question: q.question,
-              category: q.category,
-              difficulty: q.difficulty,
-              expected_keywords: q.expectedKeywords,
-              scoring_criteria: q.scoringCriteria
-            }))
-          );
-      }
+      // Gerar perguntas de IA otimizadas automaticamente
+      await generateOptimizedQuestions({
+        jobId: data.id,
+        jobTitle: jobData.title,
+        jobArea: jobData.area,
+        jobDescription: jobData.description,
+        jobLevel: jobData.level,
+        requirements: jobData.requirements
+      });
 
       // Adicionar perguntas customizadas se existirem
       if (jobData.customQuestions.length > 0) {
@@ -175,7 +171,7 @@ export const useJobs = () => {
   // Adicionar resultado de candidato
   const addCandidateResult = async (candidateData: Omit<CandidateResult, 'id'>) => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('candidate_results')
         .insert([{
           name: candidateData.name,
@@ -201,7 +197,7 @@ export const useJobs = () => {
 
       // Adicionar respostas da entrevista
       if (candidateData.responses.length > 0) {
-        await supabase
+        await (supabase as any)
           .from('interview_responses')
           .insert(
             candidateData.responses.map(r => ({
@@ -246,7 +242,7 @@ export const useJobs = () => {
       if (!job) return;
 
       // Buscar candidato original
-      const { data: originalCandidate, error } = await supabase
+      const { data: originalCandidate, error } = await (supabase as any)
         .from('candidate_results')
         .select('*')
         .eq('id', candidateId)
@@ -265,7 +261,7 @@ export const useJobs = () => {
 
       delete newCandidateData.id; // Remove o ID para criar nova entrada
 
-      await supabase
+      await (supabase as any)
         .from('candidate_results')
         .insert([newCandidateData]);
 
@@ -307,6 +303,7 @@ export const useJobs = () => {
     addCandidateResult,
     getJobById,
     reuseCandidateForJob,
-    refreshJobs: fetchJobs
+    refreshJobs: fetchJobs,
+    generateOptimizedQuestions
   };
 };
